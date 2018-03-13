@@ -5,6 +5,8 @@ Spike out:
 * GoLang
 * Dynamo DB
 
+![alt text](https://github.com/fotinik/moviesls/blob/master/moviesls.png)
+
 ### Pre-requistes 
 * sls installed
 * aws credentials

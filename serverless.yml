@@ -1,0 +1,61 @@
+service: moviesls
+
+custom:
+  tableName: 'Movies'
+  dynamodb:
+    start:
+     migrate: true
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: dev
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["MoviesDynamoDBTable", "Arn" ] }
+  environment:
+    MOVIES_TABLE: ${self:custom.tableName}
+
+package:
+ exclude:
+   - ./**
+ include:
+   - ./bin/**
+
+functions:
+  movies:
+    handler: bin/movies
+    events:
+      - http:
+          path: movies
+          method: post
+      - http:
+          path: movies
+          method: get
+
+resources:
+  Resources:
+    MoviesDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: movieId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: movieId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tableName}

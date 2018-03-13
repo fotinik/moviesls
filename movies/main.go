@@ -20,12 +20,14 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 }
 
 func allMovies() (events.APIGatewayProxyResponse, error) {
+	fmt.Println("Received retrieve all movies request")
 	err, result := MovieService.RetrieveAllMovies()
 	return events.APIGatewayProxyResponse{Body: result, StatusCode: 200}, err
 }
 
 
 func createMovie(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	fmt.Println("Received create movie request: ", request)
 	body := request.Body
 	err := MovieService.StoreMovie(body)
 	return events.APIGatewayProxyResponse{Body: body, StatusCode: 200}, err

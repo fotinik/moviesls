@@ -37,7 +37,7 @@ curl -H "Content-Type: application/json" -X GET ${BASE_DOMAIN}/movies
 ### Logs
 
 ```
-$ sls deploy 
+$ sls logs -f movies
 ```
 
 ### Dependencies

@@ -12,19 +12,16 @@ func RetrieveAllMovies() (error, string) {
 	table := getMoviesTable()
 	var results []Movie
 	err := table.Scan().All(&results)
-	body, err := json.Marshal(results)
-	result := string(body)
-	return err, result
+	jsonResult, err := json.Marshal(results)
+	return err, string(jsonResult)
 }
 
-func StoreMovie(body string) error {
-	fmt.Println("Received body: ", body)
-	db := dynamo.New(session.New(), &aws.Config{})
-	table := db.Table("Movies")
+func StoreMovie(request string) error {
+	table := getMoviesTable()
 	var m Movie
-	err := json.Unmarshal([]byte(body), &m)
-	fmt.Println("Json err: ", err)
-	fmt.Println("Json: ", m)
+	err := json.Unmarshal([]byte(request), &m)
+	fmt.Println("Error parsing movie: ", err)
+	fmt.Println("Storing new movie: ", m)
 	err = table.Put(m).Run()
 	return err
 }

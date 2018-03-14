@@ -10,29 +10,43 @@ import (
 
 func RetrieveAllMovies() (error, string) {
 	table := getMoviesTable()
-	var results []Movie
+	var results []movie
 	err := table.Scan().All(&results)
+
+	if err != nil {
+		fmt.Println("Error retrieving movies: ", err)
+	}
+
 	jsonResult, err := json.Marshal(results)
 	return err, string(jsonResult)
 }
 
 func StoreMovie(request string) error {
 	table := getMoviesTable()
-	var m Movie
+	var m movie
 	err := json.Unmarshal([]byte(request), &m)
-	fmt.Println("Error parsing movie: ", err)
+
+	if err != nil {
+		fmt.Println("Error parsing movie: ", err)
+	}
+
 	fmt.Println("Storing new movie: ", m)
 	err = table.Put(m).Run()
 	return err
 }
 
 func getMoviesTable() dynamo.Table {
-	db := dynamo.New(session.New(), &aws.Config{})
+	s, err := session.NewSession(&aws.Config{})
+	if err != nil {
+		fmt.Println("Error dynamo session: ", err)
+	}
+
+	db := dynamo.New(s, &aws.Config{})
 	table := db.Table("Movies")
 	return table
 }
 
-type Movie struct {
+type movie struct {
 	MovieId string `dynamo:"movieId"`
 	Name string `dynamo:"name"`
 }
